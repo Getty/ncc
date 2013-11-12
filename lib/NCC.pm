@@ -8,7 +8,9 @@ use Carp qw( croak );
 use File::Temp qw( tempdir );
 use File::Spec::Functions;
 use File::Path qw( make_path );
+use Devel::OverrideGlobalRequire;
 use lib ();
+use DDP;
 
 our %WarpCores;
 my %files;
@@ -65,8 +67,8 @@ sub make_pm {
 sub engineering { $WarpCores{$_[0]} }
 
 sub install_warpcore {
-	my $file = $_[0];
-	return CORE::require( $file ) if defined $files{$file} or $file !~ m/\.pm$/;
+	my ( $next, $file ) = @_;
+	return $next->() if defined $files{$file} or $file !~ m/\.pm$/;
 	$files{$file} = 1;
 	( my $ncc_file = $file ) =~ s/\.pm$/.ncc/g;
 	( my $module = $file ) =~ s/\//::/g;
@@ -81,15 +83,15 @@ sub install_warpcore {
 		$WarpCores{$module}->energize($module);
 		$has_warp = 1;
 	}
-	CORE::require( $file );
+	$next->();
 	if ($has_warp && $WarpCores{$module}->can('enervate')) {
 		$WarpCores{$module}->enervate($module);
 	}
 }
 
-BEGIN {
-	*CORE::GLOBAL::require = sub { install_warpcore(@_) };
-}
+BEGIN { Devel::OverrideGlobalRequire::override_global_require(sub {
+	install_warpcore(@_)
+}) }
 
 1;
 
