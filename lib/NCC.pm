@@ -30,7 +30,8 @@ sub import {
 		return;
 	}
 	return if defined $WarpCores{$target};
-	my $warpcore_class = $class.'::WarpCore';
+	my $warpcore_class = scalar @args == 2 && $args[0] eq 'WarpCore'
+		? $args[1] : $class.'::WarpCore';
 	load_class($warpcore_class);
 	croak "WarpCore can't be instantiated" unless $warpcore_class->can('new');
 	croak "WarpCore needs at least an energize function" unless $warpcore_class->can('energize');
@@ -91,3 +92,30 @@ BEGIN {
 }
 
 1;
+
+=encoding utf8
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+B<ALPHA> B<ALPHA> B<ALPHA> B<ALPHA> B<ALPHA> 
+
+Can't.... explain..... yet.... Look at the tests
+
+=head1 SUPPORT
+
+IRC
+
+  Join #gid on irc.perl.org. Highlight Getty for fast reaction :).
+
+Repository
+
+  http://github.com/Getty/ncc
+  Pull request and additional contributors are welcome
+ 
+Issue Tracker
+
+  http://github.com/Getty/ncc/issues
+
+
