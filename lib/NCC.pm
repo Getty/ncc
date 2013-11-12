@@ -71,12 +71,12 @@ sub install_warpcore {
 	( my $ncc_file = $file ) =~ s/\.pm$/.ncc/g;
 	( my $module = $file ) =~ s/\//::/g;
 	$module =~ s/\.pm$//g;
-	if (my $ncc = find_in_inc($ncc_file)) {
-		$INCC{$file} = $ncc;
-		make_pm($module,$ncc,catfile($tempdir,$file));
-	}
 	my $has_warp;
 	if (my @matches = grep { $module =~ m/^${_}::/ } sort { length($b) <=> length($a) } keys %WarpCores) {
+		if (my $ncc = find_in_inc($ncc_file)) {
+			$INCC{$file} = $ncc;
+			make_pm($module,$ncc,catfile($tempdir,$file));
+		}
 		$WarpCores{$module} = $WarpCores{$matches[0]};
 		$WarpCores{$module}->energize($module);
 		$has_warp = 1;
